@@ -29,11 +29,15 @@ const style = {
 
 function Home() {
     let navigate = useNavigate(); 
-  const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-  const [roomName, setRoomName] = React.useState("");
-  const [userName, setUserName] = React.useState(sessionStorage.getItem("username") || "");
+    const [open, setOpen] = React.useState(false);
+    const [createOpen, setCreateOpen] = React.useState(false);
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
+    const handleCreateOpen = () => setCreateOpen(true);
+    const handleCreateClose = () => setCreateOpen(false);
+    const [roomName, setRoomName] = React.useState("");
+    const [userName, setUserName] = React.useState(sessionStorage.getItem("username") || "");
+    
   return (
     <>
       <div className="flex relative bg-black">
@@ -51,7 +55,9 @@ function Home() {
             </span>
           </div>
           <div className="flex flex-col gap-6 w-56">
-            <button className="px-4 py-3 w-full rounded backdrop-blur-sm bg-blue-700/70 text-xl uppercase text-white font-semibold">
+            <button
+             onClick={handleCreateOpen}
+             className="px-4 py-3 w-full rounded backdrop-blur-sm bg-blue-700/70 text-xl uppercase text-white font-semibold">
               Create Room
             </button>
             <button
@@ -110,6 +116,57 @@ function Home() {
                     let path = `/room/${roomName}`; 
                     navigate(path);
                 }} variant="contained">Join</Button>
+              </div>
+            </Box>
+          </Fade>
+        </Modal>
+      </div>
+      <div>
+        <Modal
+          aria-labelledby="transition-modal-title"
+          aria-describedby="transition-modal-description"
+          open={createOpen}
+          onClose={handleCreateClose}
+          closeAfterTransition
+          slots={{ backdrop: Backdrop }}
+          slotProps={{
+            backdrop: {
+              timeout: 500,
+            },
+          }}
+        >
+          <Fade in={createOpen}>
+            <Box sx={style}>
+              <div className="flex flex-col gap-4 ">
+                <h3 className="uppercase text-xl text-center font-semibold ">
+                  Create Room
+                </h3>
+                <FormControl className="w-full">
+                  <TextField
+                    label="Room Name"
+                    variant="outlined"
+                    id="my-input"
+                    margin="normal"
+                    aria-describedby="my-helper-text"
+                    defaultValue={roomName}
+                    onChange={(data)=>{setRoomName(data.target.value)}}
+                  />
+                  <TextField
+                    label="Username"
+                    variant="outlined"
+                    id="my-input"
+                    margin="normal"
+                    InputLabelProps={{ className: "text-white" }}
+                    aria-describedby="my-helper-text"
+                    defaultValue={userName}
+                    onChange={(data)=>{setUserName(data.target.value)}}
+                  />
+                </FormControl>
+                <Button onClick={()=>{
+                    sessionStorage.setItem("username",userName)
+                    let path = `/room/${roomName}`; 
+                    navigate(path);
+                }} variant="contained">Create & Join</Button>
               </div>
             </Box>
           </Fade>
