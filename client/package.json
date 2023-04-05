@@ -1,5 +1,5 @@
 {
-  "name": "pictureon",
+  "name": "simplyonline",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -12,11 +12,15 @@
     "@testing-library/user-event": "^13.5.0",
     "agora-rtc-react": "^1.1.3",
     "agora-rtc-sdk-ng": "^4.16.1",
+    "axios": "^1.3.4",
     "material-symbols": "^0.4.6",
     "react": "^18.2.0",
+    "react-cam": "^1.1.11",
     "react-dom": "^18.2.0",
+    "react-opencvjs": "^1.0.2",
     "react-router-dom": "^6.8.1",
     "react-scripts": "5.0.1",
+    "react-webcam": "^7.0.1",
     "styled-components": "^5.3.6",
     "web-vitals": "^2.1.4"
   },

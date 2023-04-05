@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import CreateRoom from "./pages/CreateRoom";
 import Home from "./pages/Home";
 import JoinRoom from "./pages/JoinRoom";
+import MarkAttendance from "./components/MarkAttendance";
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="create" element={<CreateRoom />} />
+            <Route path="attendance" element={<MarkAttendance />} />
             <Route path="room/:roomName" element={<JoinRoom />} />
             <Route path="*" element={<NoPage />} />
           </Routes>

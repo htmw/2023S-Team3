@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Button, Grid } from "@mui/material";
+import { Button, Grid, Modal } from "@mui/material";
 import {
   getClient,
   getUserTracks
 } from "../helpers/connect.js";
 import { useNavigate } from "react-router-dom";
 import { AgoraVideoPlayer } from "agora-rtc-react";
+import MarkAttendance from "../components/MarkAttendance.js";
+import { useCallback } from "react";
 export default function JoinRoom() {
   let navigate = useNavigate(); 
   var uid, roomName, displayName;
@@ -30,6 +32,13 @@ export default function JoinRoom() {
       console.log("enter user name");
     }
   }
+  function takeAttendance() {
+    setShowAttendancePopup(true)
+    
+  }
+  const closeAttendanceModal = useCallback(() => {
+    setShowAttendancePopup(false)
+  })
   setUId()
   setRoomName()
   setDisplayName()
@@ -39,6 +48,7 @@ export default function JoinRoom() {
   const [start, setStart] = useState(false);
   const [trackState, setTrackState] = useState({ video: true, audio: true });
   const [videoWidth, setVideoWidth] = useState(12);
+  const [showAttendancePopup, setShowAttendancePopup ] = useState(false)
 
   const mute = async (type) => {
     if (type === "audio") {
@@ -156,6 +166,7 @@ export default function JoinRoom() {
             <div className="flex justify-center gap-2 items-end z-10">
               <Button
                 variant="contained"
+                title="Audio"
                 onClick={() => mute("audio")}
               >
                 {trackState.audio ? 
@@ -165,6 +176,7 @@ export default function JoinRoom() {
               </Button>
               <Button
                 variant="contained"
+                title="Video"
                 onClick={() => mute("video")}
               >
                 {trackState.video ? 
@@ -174,8 +186,15 @@ export default function JoinRoom() {
               </Button>
               <Button
                 variant="contained"
+                title="Exit"
                 onClick={() => leaveChannel()}
               ><span className="material-symbols-outlined">logout</span>
+              </Button>
+              <Button
+                variant="contained"
+                title="Mark Attendance"
+                onClick={() => takeAttendance()}
+              ><span className="material-symbols-outlined">group</span>
               </Button>
             </div>
           </div>
@@ -184,6 +203,12 @@ export default function JoinRoom() {
             videoTrack={tracks[1]}
           />
         </div>
+        <Modal
+          open={showAttendancePopup}
+          className="bg-white"
+        >
+          <MarkAttendance closeModal={closeAttendanceModal} />
+        </Modal>
         </div>
       </div>
     )}
