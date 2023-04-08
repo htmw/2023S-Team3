@@ -7,7 +7,7 @@ import numpy as np
 import json
 def buildModel():
     print("---------------------------building model---------------------------")
-    DeepFace.find(model_name='Facenet', img_path="Ajay.jpg", db_path = "images")
+    DeepFace.find(model_name='Facenet', img_path="images/Amar.jpg", db_path = "images")
     print("---------------------------Model building has completed---------------------------")
 
 app = Flask(__name__)
