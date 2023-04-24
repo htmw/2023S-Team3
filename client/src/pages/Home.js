@@ -5,14 +5,13 @@ import {
   Modal,
   Box,
   Backdrop,
-  Input,
-  InputLabel,
   FormControl,
   TextField,
   Button,
 } from "@mui/material";
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import api from "../helpers/api";
 const style = {
   position: "absolute",
   top: "50%",
@@ -37,7 +36,12 @@ function Home() {
     const handleCreateClose = () => setCreateOpen(false);
     const [roomName, setRoomName] = React.useState("");
     const [userName, setUserName] = React.useState(sessionStorage.getItem("username") || "");
-    
+    const isRoomNameValid = roomName.trim() !== '';
+    const isUserNameValid = userName.trim() !== '';
+    const [roomNameTouched, setRoomNameTouched] = React.useState(false);
+    const [userNameTouched, setUserNameTouched] = React.useState(false);
+    const [roomAlreadyExists, setRoomAlreadyExists] = React.useState(false);
+    const [roomDoesnotExist, setRoomDoesnotExist] = React.useState(false);
   return (
     <>
       <div className="flex relative bg-black">
@@ -97,7 +101,14 @@ function Home() {
                     margin="normal"
                     aria-describedby="my-helper-text"
                     defaultValue={roomName}
-                    onChange={(data)=>{setRoomName(data.target.value)}}
+                    onChange={(data)=>{
+                      setRoomName(data.target.value);
+                      setRoomNameTouched(true);
+                      setRoomDoesnotExist(false)
+                    }}
+                    required
+                    error={(!isRoomNameValid && roomNameTouched) || roomDoesnotExist}
+                    helperText={isRoomNameValid || !roomNameTouched ? roomDoesnotExist ? 'Room Doesnot exist' : '' : 'Room Name is required'}
                   />
                   <TextField
                     label="Username"
@@ -107,14 +118,34 @@ function Home() {
                     InputLabelProps={{ className: "text-white" }}
                     aria-describedby="my-helper-text"
                     defaultValue={userName}
-                    onChange={(data)=>{setUserName(data.target.value)}}
+                    onChange={(data)=>{setUserName(data.target.value);setUserNameTouched(true);}}
+                    required
+                    error={!isUserNameValid && userNameTouched}
+                    helperText={isUserNameValid || !userNameTouched ? '' : 'Username is required'}
                   />
                 </FormControl>
-                <Button onClick={()=>{
-                    console.log(userName,roomName)
-                    sessionStorage.setItem("username",userName)
-                    let path = `/room/${roomName}`; 
-                    navigate(path);
+                <Button onClick={async ()=>{
+                  
+                  setUserNameTouched(true);
+                  setRoomNameTouched(true);
+                  if (isRoomNameValid && isUserNameValid) {
+                    let response = await api.post(process.env.BACKEND_URL + "/joinRoom",{
+                      room_name: roomName
+                    })
+                    if(response.data[0][0]?.message) {
+                      if(response.data[0][0]?.message === "Room does not exist or is not currently available.") {
+                        setRoomDoesnotExist(true)
+                      } else {
+                        sessionStorage.setItem("username",userName)
+                        let path = `/room/${roomName}`; 
+                        navigate(path);
+                      }
+                    } else {
+                      sessionStorage.setItem("username",userName)
+                      let path = `/room/${roomName}`; 
+                      navigate(path);
+                    }
+                  }
                 }} variant="contained">Join</Button>
               </div>
             </Box>
@@ -149,7 +180,14 @@ function Home() {
                     margin="normal"
                     aria-describedby="my-helper-text"
                     defaultValue={roomName}
-                    onChange={(data)=>{setRoomName(data.target.value)}}
+                    onChange={(data)=>{
+                      setRoomName(data.target.value);
+                      setRoomNameTouched(true);
+                      setRoomAlreadyExists(false)
+                    }}
+                    required
+                    error={(!isRoomNameValid && roomNameTouched) || roomAlreadyExists}
+                    helperText={isRoomNameValid || !roomNameTouched ? roomAlreadyExists ? 'Room Name Already Exists' : '' : 'Room Name is required'}
                   />
                   <TextField
                     label="Username"
@@ -159,13 +197,37 @@ function Home() {
                     InputLabelProps={{ className: "text-white" }}
                     aria-describedby="my-helper-text"
                     defaultValue={userName}
-                    onChange={(data)=>{setUserName(data.target.value)}}
+                    onChange={(data)=>{
+                      setUserName(data.target.value);
+                      setUserNameTouched(true);
+                    }}
+                    required
+                    error={(!isUserNameValid && userNameTouched)}
+                    helperText={isUserNameValid || !userNameTouched ? '' : roomAlreadyExists ? 'Room Name Already Exists' : 'Username is required'}
                   />
                 </FormControl>
-                <Button onClick={()=>{
-                    sessionStorage.setItem("username",userName)
-                    let path = `/room/${roomName}`; 
-                    navigate(path);
+                <Button onClick={async ()=>{
+                    setUserNameTouched(true);
+                    setRoomNameTouched(true);
+                    if (isRoomNameValid && isUserNameValid) {
+                      let response = await api.post(process.env.BACKEND_URL + "/createRoom",{
+                        room_name: roomName,
+                        user_name: userName
+                      })
+                      if(response.data[0][0]?.message) {
+                        if(response.data[0][0]?.message === "Room created successfully.") {
+                          sessionStorage.setItem("username",userName)
+                          let path = `/room/${roomName}`; 
+                          navigate(path);
+                        } else {
+                          setRoomAlreadyExists(true)
+                        }
+
+                      } else {
+                        
+                      }
+                      
+                    }
                 }} variant="contained">Create & Join</Button>
               </div>
             </Box>
