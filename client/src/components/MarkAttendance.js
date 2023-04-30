@@ -18,7 +18,7 @@ const MarkAttendance = ({ closeModal, attendanceId, roomName, username }) => {
     setImageSrc(imgSrc);
   }, [webcamRef]);
   const verifyImage = async () => {
-    let response = await axios.post("http://127.0.0.1:5000/verify", {
+    let response = await axios.post("http://20.124.123.35:5000/verify", {
       data_url: imageSrc,
     });
     var res = [];

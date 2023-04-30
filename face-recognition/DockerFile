@@ -11,6 +11,6 @@ EXPOSE 5000
 CMD ["python", "home.py"]
 
 
-# docker build -t simplyonline:face .
+# sudo docker buildx build  --platform linux/amd64 -t simplyonline:face .
 
 # docker run -p 5000:5000 -d simplyonline:face

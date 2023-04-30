@@ -29,4 +29,4 @@ if __name__ == '__main__':
     buildModel()
     port = 5000
     CORS(app)
-    app.run(port=port)
+    app.run(port=port,host='0.0.0.0')
