@@ -20,6 +20,7 @@
 .env.test.local
 .env.production.local
 .env
+face-recognition/.venv
 
 .parcel-cache
 dist

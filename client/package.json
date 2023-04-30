@@ -1,5 +1,5 @@
 {
-  "name": "pictureon",
+  "name": "simplyonline",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -11,7 +11,7 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "agora-rtc-react": "^1.1.3",
-    "agora-rtc-sdk-ng": "^4.16.1",
+    "agora-rtm-sdk": "^1.6.0-205",
     "axios": "^1.3.4",
     "material-symbols": "^0.4.6",
     "react": "^18.2.0",

@@ -8,8 +8,10 @@ const config = {
 
 const client = axios.create(config);
 
-const get = (url) => {
-  return client.get(url);
+const get = (url,params) => {
+  return client.get(url,{
+    params: params
+  });
 };
 
 const post = (url, payload) => {

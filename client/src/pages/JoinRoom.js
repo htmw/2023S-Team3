@@ -2,17 +2,22 @@ import React, { useEffect, useState } from "react";
 import { Button, Grid, Modal } from "@mui/material";
 import {
   getClient,
-  getUserTracks
+  getUserTracks,
+  rtmClient
 } from "../helpers/connect.js";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { AgoraVideoPlayer } from "agora-rtc-react";
 import MarkAttendance from "../components/MarkAttendance.js";
 import { useCallback } from "react";
+import api from "../helpers/api.js";
 export default function JoinRoom() {
   let navigate = useNavigate(); 
-  var uid, roomName, displayName;
-  const queryString = window.location.search;
-  const urlParams = new URLSearchParams(queryString);
+  var uid;
+  var displayName = sessionStorage.getItem("username") 
+  if(!displayName) {
+    navigate("/")
+  }
+  var { roomName } = useParams();
   function setUId() {
     uid = sessionStorage.getItem("uid");
     if (!uid) {
@@ -21,27 +26,35 @@ export default function JoinRoom() {
     }
   }
   function setRoomName() {
-    roomName = urlParams.get("roomName");
     if (!roomName) {
       roomName = "main";
     }
   }
-  function setDisplayName() {
-    displayName = sessionStorage.getItem("username");
-    if (!displayName) {
-      console.log("enter user name");
-    }
+  async function takeAttendance() {
+    let response = await api.post(process.env.BACKEND_URL + "/startAttendance",{owner_name: displayName, room_name: roomName})
+    rtmChannel.sendMessage({text:JSON.stringify({'type':'mark_attendance', attendance_id: response.data[0][0].id})})
+    loadAttendances(response.data[0][0].id)
   }
-  function takeAttendance() {
-    setShowAttendancePopup(true)
-    
+  async function loadAttendances(id) {
+    setAttendanceLoading(true)
+    setShowAttendanceResult(true)
+    let timer = setInterval(async () => {
+      let response = await api.get(process.env.BACKEND_URL + "/attendanceLogs",{
+        attendance_id: id
+      })
+      setAttendanceResults(response.data[0] || [])
+    }, 5000);
+    setTimeout(()=> {
+      clearInterval(timer)
+      setAttendanceLoading(false)
+    },120000)
+
   }
   const closeAttendanceModal = useCallback(() => {
     setShowAttendancePopup(false)
   })
   setUId()
   setRoomName()
-  setDisplayName()
   const client = getClient();
   const { ready, tracks } = getUserTracks();
   const [users, setUsers] = useState([]);
@@ -49,6 +62,12 @@ export default function JoinRoom() {
   const [trackState, setTrackState] = useState({ video: true, audio: true });
   const [videoWidth, setVideoWidth] = useState(12);
   const [showAttendancePopup, setShowAttendancePopup ] = useState(false)
+  const [rtmChannel, setRtmChannel] = useState(null)
+  const [isAdmin, setIsAdmin] = useState(false)
+  const [attendanceId, setAttendanceId] = useState(null)
+  const [showAttendanceResult, setShowAttendanceResult] = useState(false)
+  const [attendanceResults, setAttendanceResults] = useState([])
+  const [attendanceLoading, setAttendanceLoading] = useState(false);
 
   const mute = async (type) => {
     if (type === "audio") {
@@ -105,6 +124,18 @@ export default function JoinRoom() {
       try {
         await client.join(process.env.APP_ID, roomName, process.env.TOKEN || null, uid);
         if (tracks) await client.publish([tracks[0], tracks[1]]);
+        await rtmClient.login({ uid: uid });
+        await rtmClient.addOrUpdateLocalUserAttributes({'name':uid})
+        let rtmChannelTemp = await rtmClient.createChannel(roomName)
+        await rtmChannelTemp.join()
+        await rtmChannelTemp.on('ChannelMessage', (messageData, MemberId) => {
+          let data = JSON.parse(messageData.text)
+          if (data.type === 'mark_attendance') {
+            setAttendanceId(data.attendance_id)
+            setShowAttendancePopup(true)
+          }
+         })
+        setRtmChannel(rtmChannelTemp)
         setStart(true);
       } catch (error) {
         console.log(error);
@@ -133,6 +164,22 @@ export default function JoinRoom() {
     }
     setVideoWidth(getWidth(users.length) + "%");
   }, [users, tracks]);
+  useEffect(async ()=> {
+    let response = await api.post(process.env.BACKEND_URL + "/joinRoom",{
+      room_name: roomName
+    })
+    if (response?.data[0][0]) {
+      if(response?.data[0][0].message === "Room does not exist or is not currently available.") {
+        navigate("/");
+      } else if (response?.data[0][0].owner_name === displayName) {
+        setIsAdmin(true)
+      } else {
+        setIsAdmin(false)
+      }
+    } else {
+      navigate("/");
+    }
+  },[])
   return (
     <div className="bg-gray-700"> {start && (
       <div className="  h-[100vh] p-4 flex flex-col">
@@ -190,24 +237,37 @@ export default function JoinRoom() {
                 onClick={() => leaveChannel()}
               ><span className="material-symbols-outlined">logout</span>
               </Button>
-              <Button
+              { isAdmin && (<Button
                 variant="contained"
+                disabled= {attendanceLoading}
                 title="Mark Attendance"
                 onClick={() => takeAttendance()}
               ><span className="material-symbols-outlined">group</span>
-              </Button>
+              </Button>)}
             </div>
           </div>
-          <div className="flex justify-end items-end z-20">
-          <AgoraVideoPlayer className=" w-36 h-36 rounded-2xl agora-player"
-            videoTrack={tracks[1]}
-          />
+          <div className="flex justify-end items-center z-20 flex-col bg-gray-600 p-2 rounded-2xl">
+            {showAttendanceResult && 
+              <div className="flex flex-col grow p-1 w-36 items-center">
+                <h2 className="text-white p-1 text-yellow-400 font-bold mb-2">Attendance</h2>
+                  { attendanceResults.map((result) => {
+                  return (
+                    <span className="text-green-200">{result.user_name}</span>
+                  )
+                  })
+                }
+                {attendanceLoading && <span className="animate-pulse text-gray-200 mt-4">Loading...</span>}
+              </div>
+            }
+            <AgoraVideoPlayer className=" w-36 h-36 rounded-2xl agora-player"
+              videoTrack={tracks[1]}
+            />
         </div>
         <Modal
           open={showAttendancePopup}
           className="bg-white"
         >
-          <MarkAttendance closeModal={closeAttendanceModal} />
+          <MarkAttendance roomName={roomName} username={displayName} attendanceId={attendanceId} closeModal={closeAttendanceModal} />
         </Modal>
         </div>
       </div>

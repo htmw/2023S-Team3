@@ -1,5 +1,5 @@
 const express = require("express");
-const Routes = require("./router");
+const {setRoutes} = require("./router");
 var cors = require("cors");
 module.exports = class Server {
   constructor(port, originAddress) {
@@ -18,7 +18,7 @@ module.exports = class Server {
     this.app.use(express.json());
   }
   initializeRoutes() {
-    this.routes = new Routes(this.app);
+    setRoutes(this.app);
   }
   start() {
     this.app.listen(this.port, () => {

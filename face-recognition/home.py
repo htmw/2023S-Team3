@@ -7,7 +7,7 @@ import numpy as np
 import json
 def buildModel():
     print("---------------------------building model---------------------------")
-    DeepFace.find(model_name='Facenet', img_path="images/Amar.jpg", db_path = "images")
+    DeepFace.find(model_name='Facenet', img_path="Ajay.jpg", db_path = "images")
     print("---------------------------Model building has completed---------------------------")
 
 app = Flask(__name__)
@@ -15,6 +15,7 @@ app = Flask(__name__)
 def verify_face():
     payloadJson = request.get_json()
     dataurl = payloadJson['data_url']
+    # Decode the data URL to a binary string and convert it to a NumPy array
     img_data = base64.b64decode(dataurl.split(",")[1])
     nparr = np.frombuffer(img_data, np.uint8)
     img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
@@ -24,6 +25,7 @@ def verify_face():
         result.append(item.to_json())
     return result
 if __name__ == '__main__':
+    # set the port number here
     buildModel()
     port = 5000
     CORS(app)
