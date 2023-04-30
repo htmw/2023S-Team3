@@ -30,7 +30,10 @@ const MarkAttendance = ({ closeModal, attendanceId, roomName, username }) => {
     let keys = Object.keys(res[0]);
     for (let i = 0; i < keys.length; i++) {
       debugger;
-      if (res[0][keys[i]] && res[0][keys[i]].includes(username)) {
+      if (
+        res[0][keys[i]] &&
+        res[0][keys[i]].toLowerCase().includes(username.toLowerCase())
+      ) {
         faceFound = true;
       }
     }
