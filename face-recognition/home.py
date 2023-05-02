@@ -1,6 +1,7 @@
 from deepface import DeepFace
 from flask import Flask, request
 from flask_cors import CORS
+from OpenSSL import SSL
 import base64
 import cv2
 import numpy as np
@@ -29,4 +30,7 @@ if __name__ == '__main__':
     buildModel()
     port = 5000
     CORS(app)
-    app.run(port=port,host='0.0.0.0')
+    context = SSL.Context(SSL.TLSv1_2_METHOD) 
+    context.use_privatekey_file('/etc/letsencrypt/live/simplyonline.eastus.cloudapp.azure.com/privkey.pem') 
+    context.use_certificate_file('/etc/letsencrypt/live/simplyonline.eastus.cloudapp.azure.com/fullchain.pem')
+    app.run(port=port,host='0.0.0.0',ssl_context=context)

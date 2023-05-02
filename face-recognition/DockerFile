@@ -2,8 +2,10 @@ FROM python:latest
 
 WORKDIR /app
 
-COPY requirements.txt /app
-RUN pip install -r requirements.txt
+# COPY requirements.txt /app
+# RUN pip install -r requirements.txt
+RUN pip install deepface flask flask_cors pyOpenSSL opencv-python-headless
+
 
 COPY . /app
 
