@@ -1,6 +1,6 @@
 # API Documentation
 
-The SimplyOnline's API is a JSON-based API. All requests are made to endpoints beginning with: 'http://localhost:3001/attendenceLogs'.
+The SimplyOnline's API is a JSON-based API. All requests are made to endpoints beginning with: 'http://localhost:3001/'.
 Requests can be made with http.
 
 
