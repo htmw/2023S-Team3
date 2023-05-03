@@ -27,8 +27,8 @@ Backend is implemented using Node.js and database system we used is MySQL
 
 The front-end of the SimplyOnline web application is designed using React JS, a popular framework for building single-page applications.
 
-- **User Interface:** The user interface is designed to be intuitive and user-friendly, with clear and concise layouts and color schemes.
-- **Navigation:** The navigation system is designed to provide easy access to all the features of the application, with clearly labeled menus and icons.
+- **User Interface:** The user interface we designed is simple where user can createroom and join room for video calling
+
 
 ### Back-end Design
 
@@ -59,6 +59,30 @@ Our application is structured as follows:
 - Version Control: Git
 - Code Editor : Visual Studio Code
 
+## WEbRTC
+WebRTC is a free tool that allows people to talk or message 
+each other in real-time using their web browsers or mobile apps. 
+You can easily use it by following simple codes called APIs. 
+
+Google made a new thing in 2011 that lots of people use for 
+talking and working together on the internet. WebRTC lets 
+people talk to each other online without needing extra programs 
+or tools. It's an easy way to learn remotely. 
+WebRTC lets people talk to each other quickly using some rules 
+and tools like RTP, SIP, and ICE. These rules make sure that 
+communication is safe, works well, and is fast, even when the 
+network is not easy to use. WebRTC has tools that can make 
+the sound and video better in communication. They can help to 
+stop noise, echoes, and make sure the volume is good.
+
+* First create and login into AgoraRTC account 
+
+[AgoraRTC](https://www.agora.io/en/) 
+
+* generate the APP_ID from the given documentation and copy to clipboard
+
+[APP_ID Generation](https://docs.agora.io/en/video-calling/reference/manage-agora-account?platform=android)
+
 ## Running Backend Server:
 
 * Clone the repository
@@ -66,10 +90,12 @@ Our application is structured as follows:
 git clone https://github.com/htmw/SimplyOnline.git
 ```
 
+
 * move to backend directory
 ```
 cd backend/
 ```
+
 * Make sure you have Node, mysql installed and correctly set up.
 * Create a new database in MySQL using:
 ```
@@ -82,6 +108,14 @@ Enter mysql password, then run:
 source sql.sql;
 ```
 
+* open .env file in the current directory and replace the following database details with your own and save it.
+```
+MY_SQL_USER = "myuser"(replace)
+PASSWORD = "mypassword"(replace)
+DB = "mydb"(replace)
+
+```
+
 * Run the following command to install packages related to backend
   
 ```
@@ -92,6 +126,9 @@ npm install
 ```
 node index.js
 ```
+
+>Now you can see the connection is succeed and the server is listening on 
+
 
 ## Running Frontend Server:
 
@@ -109,10 +146,19 @@ npm install
 ```
 npm audit fix --force && npm install
 ```
+
+* open .env file in the current directory and replace the following database details with your own and save it.
+```
+APP_ID = "youragoraRTC-app_id"
+BACKEND_URL = "backend-end running port"
+```
+
 * Run the following command to run the front-end(client):
 ```
 npm start
 ```
+
+>Now you can see the client running on localhost
 
 ## Running face-recognition server:
 
@@ -125,6 +171,16 @@ git clone https://github.com/htmw/SimplyOnline.git
 
 ```
 cd face-recognition/
+```
+
+* in the Images folder add your images to train the module
+```
+cd images/
+```
+
+* Install the following the command to install dependencies required
+
+```
 pip install -r requirements.txt
 ```
 * Run the following command to run face-recognition server
