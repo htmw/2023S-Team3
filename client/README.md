@@ -23,7 +23,16 @@ npm install
 ```
 npm audit fix --force && npm install
 ```
+
+* open .env file in the current directory and replace the following database details with your own and save it.
+```
+APP_ID = "youragoraRTC-app_id"
+BACKEND_URL = "backend-end running port"
+```
+
 * Run the following command to run the front-end(client):
 ```
 npm start
 ```
+
+>Now you can see the client running on localhost
