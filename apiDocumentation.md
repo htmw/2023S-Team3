@@ -13,6 +13,8 @@ This is sent with the default "Content-Type" header of "application/x-www-form-u
 *Input body type:* **JSON Object**  
 *Output type:* **JSON Object**  
 
+## CreateRoom API
+
 *Sample request:* http://localhost:3001/createRoom
 
 *Sample input:*  
@@ -46,6 +48,8 @@ This is sent with the default "Content-Type" header of "application/x-www-form-u
 *Input body type:* **JSON Object**  
 *Output type:* **JSON Object**  
 
+## joinRoom API
+
 *Sample request:* http://localhost:3001/joinRoom
 
 *Sample input:*  
@@ -55,7 +59,7 @@ This is sent with the default "Content-Type" header of "application/x-www-form-u
 } 
 ```
 
-*Sample output
+*Sample output:*
 ```JSON
 [
     [
@@ -90,6 +94,8 @@ This is sent with the default "Content-Type" header of "application/x-www-form-u
 *Input body type:* **JSON Object**  
 *Output type:* **JSON Object**  
 
+## startAttendance API
+
 *Sample request:* http://localhost:3001/startAttendance
 
 *Sample input:*  
@@ -100,7 +106,7 @@ This is sent with the default "Content-Type" header of "application/x-www-form-u
 } 
 ```
 
-*Sample outpu
+*Sample output:*
 ```JSON
 [
     [
@@ -126,6 +132,8 @@ This is sent with the default "Content-Type" header of "application/x-www-form-u
 *Input body type:* **JSON Object**  
 *Output type:* **JSON Object**  
 
+## faceVerify API
+
 *Sample request:* http://localhost:5001/verify
 
 *Sample input:*  
@@ -137,7 +145,7 @@ This is sent with the default "Content-Type" header of "application/x-www-form-u
 } 
 ```
 
-*Sample outout
+*Sample output:*
 ```JSON
 [
     "{\"identity\":{\"0\":\"images\/Ajay.jpg\"},\"source_x\":{\"0\":113},\"source_y\":{\"0\":109},\"source_w\":{\"0\":135},\"source_h\":{\"0\":135},\"Facenet_cosine\":{\"0\":0.1823376272}}"
@@ -146,12 +154,14 @@ This is sent with the default "Content-Type" header of "application/x-www-form-u
 
 
 
-## 1. getServices
+## 2. getServices
 
 This API endpoint retrieves the list of services that the end-user can avail.
 
 *Request type:* **GET**  
 *Output type:* **JSON Array**  
+
+## attendanceLogs API
 
 *Sample request:* http://localhost:3001/attendanceLogs?attendance_id=100046
 
