@@ -178,7 +178,7 @@ cd face-recognition/
 cd images/
 ```
 
-* Install the following the command to install dependencies required
+* Run the following command to install dependencies required
 
 ```
 pip install -r requirements.txt
