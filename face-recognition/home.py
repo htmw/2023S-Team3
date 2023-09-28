@@ -28,9 +28,6 @@ def verify_face():
 if __name__ == '__main__':
     # set the port number here
     buildModel()
-    port = 5000
+    port = 5001
     CORS(app)
-    context = SSL.Context(SSL.TLSv1_2_METHOD) 
-    context.use_privatekey_file('/etc/letsencrypt/live/simplyonline.eastus.cloudapp.azure.com/privkey.pem') 
-    context.use_certificate_file('/etc/letsencrypt/live/simplyonline.eastus.cloudapp.azure.com/fullchain.pem')
-    app.run(port=port,host='0.0.0.0',ssl_context=context)
+    app.run(port=port,host='0.0.0.0')

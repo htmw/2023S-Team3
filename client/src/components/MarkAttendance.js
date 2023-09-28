@@ -18,7 +18,7 @@ const MarkAttendance = ({ closeModal, attendanceId, roomName, username }) => {
     setImageSrc(imgSrc);
   }, [webcamRef]);
   const verifyImage = async () => {
-    let response = await axios.post("https://simplyonline.eastus.cloudapp.azure.com:5000/verify", {
+    let response = await axios.post("http://127.0.0.1:5001/verify", {
       data_url: imageSrc,
     });
     var res = [];
@@ -30,10 +30,7 @@ const MarkAttendance = ({ closeModal, attendanceId, roomName, username }) => {
     let keys = Object.keys(res[0]);
     for (let i = 0; i < keys.length; i++) {
       debugger;
-      if (
-        res[0][keys[i]] &&
-        res[0][keys[i]].toLowerCase().includes(username.toLowerCase())
-      ) {
+      if (res[0][keys[i]] && res[0][keys[i]].includes(username)) {
         faceFound = true;
       }
     }
@@ -48,9 +45,6 @@ const MarkAttendance = ({ closeModal, attendanceId, roomName, username }) => {
       );
       if (response.data[0][0]) {
         setResult(true);
-        setTimeout(() => {
-          closeModal();
-        }, 2000);
       }
     } else {
       setResult(false);
