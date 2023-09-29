@@ -2,7 +2,7 @@ import { Button } from "@mui/material";
 import axios from "axios";
 import React from "react";
 import Webcam from "react-webcam";
-import api from "../helpers/api";
+import useApi from "../helpers/useApi";
 const videoConstraints = {
   width: 300,
   height: 300,
@@ -13,12 +13,13 @@ const MarkAttendance = ({ closeModal, attendanceId, roomName, username }) => {
   const webcamRef = React.useRef(null);
   const [imageSrc, setImageSrc] = React.useState(null);
   const [result, setResult] = React.useState(null);
+  const api = useApi();
   const capture = React.useCallback(() => {
     let imgSrc = webcamRef.current.getScreenshot();
     setImageSrc(imgSrc);
   }, [webcamRef]);
   const verifyImage = async () => {
-    let response = await axios.post("http://127.0.0.1:5001/verify", {
+    let response = await axios.post("http://127.0.0.1:5000/verify", {
       data_url: imageSrc,
     });
     var res = [];
