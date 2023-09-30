@@ -14,7 +14,6 @@ module.exports = class ConnectDB {
       this.connection.getConnection(function (err) {
         if (err) {
           console.log("Connection failed");
-          console.log(err)
           resolve(false);
         } else {
           console.log("Connection Succeeded");
