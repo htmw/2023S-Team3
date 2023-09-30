@@ -12,6 +12,7 @@ import {
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import useApi from "../helpers/useApi";
+import { parseJwt } from "../helpers/utils";
 const style = {
   position: "absolute",
   top: "50%",
@@ -35,20 +36,16 @@ function Home() {
   const handleCreateOpen = () => setCreateOpen(true);
   const handleCreateClose = () => setCreateOpen(false);
   const [roomName, setRoomName] = React.useState("");
-  const [userName, setUserName] = React.useState(
-    sessionStorage.getItem("username") || ""
-  );
   const isRoomNameValid = roomName.trim() !== "";
-  const isUserNameValid = userName.trim() !== "";
   const [roomNameTouched, setRoomNameTouched] = React.useState(false);
-  const [userNameTouched, setUserNameTouched] = React.useState(false);
   const [roomAlreadyExists, setRoomAlreadyExists] = React.useState(false);
   const [roomDoesnotExist, setRoomDoesnotExist] = React.useState(false);
+  const api = useApi();
   return (
     <>
-      <div className="flex relative bg-black">
+      <div className="flex relative bg-black h-full">
         <img
-          className=" opacity-20 flex h-[100vh] grow object-cover justify-center"
+          className=" opacity-20 flex h-full grow object-cover justify-center"
           src={Image}
         ></img>
         <div className=" absolute flex flex-col gap-28 w-full h-full pt-24 items-center">
@@ -121,32 +118,11 @@ function Home() {
                         : "Room Name is required"
                     }
                   />
-                  <TextField
-                    label="Username"
-                    variant="outlined"
-                    id="my-input"
-                    margin="normal"
-                    InputLabelProps={{ className: "text-white" }}
-                    aria-describedby="my-helper-text"
-                    defaultValue={userName}
-                    onChange={(data) => {
-                      setUserName(data.target.value);
-                      setUserNameTouched(true);
-                    }}
-                    required
-                    error={!isUserNameValid && userNameTouched}
-                    helperText={
-                      isUserNameValid || !userNameTouched
-                        ? ""
-                        : "Username is required"
-                    }
-                  />
                 </FormControl>
                 <Button
                   onClick={async () => {
-                    setUserNameTouched(true);
                     setRoomNameTouched(true);
-                    if (isRoomNameValid && isUserNameValid) {
+                    if (isRoomNameValid) {
                       let response = await api.post(
                         process.env.BACKEND_URL + "/joinRoom",
                         {
@@ -160,12 +136,10 @@ function Home() {
                         ) {
                           setRoomDoesnotExist(true);
                         } else {
-                          sessionStorage.setItem("username", userName);
                           let path = `/room/${roomName}`;
                           navigate(path);
                         }
                       } else {
-                        sessionStorage.setItem("username", userName);
                         let path = `/room/${roomName}`;
                         navigate(path);
                       }
@@ -225,39 +199,18 @@ function Home() {
                         : "Room Name is required"
                     }
                   />
-                  <TextField
-                    label="Username"
-                    variant="outlined"
-                    id="my-input"
-                    margin="normal"
-                    InputLabelProps={{ className: "text-white" }}
-                    aria-describedby="my-helper-text"
-                    defaultValue={userName}
-                    onChange={(data) => {
-                      setUserName(data.target.value);
-                      setUserNameTouched(true);
-                    }}
-                    required
-                    error={!isUserNameValid && userNameTouched}
-                    helperText={
-                      isUserNameValid || !userNameTouched
-                        ? ""
-                        : roomAlreadyExists
-                        ? "Room Name Already Exists"
-                        : "Username is required"
-                    }
-                  />
                 </FormControl>
                 <Button
                   onClick={async () => {
-                    setUserNameTouched(true);
                     setRoomNameTouched(true);
-                    if (isRoomNameValid && isUserNameValid) {
+                    if (isRoomNameValid) {
+                      const token = localStorage.getItem("token");
+                      const data = JSON.parse(parseJwt(token));
                       let response = await api.post(
                         process.env.BACKEND_URL + "/createRoom",
                         {
                           room_name: roomName,
-                          user_name: userName,
+                          user_name: data.email,
                         }
                       );
                       if (response.data[0][0]?.message) {
@@ -265,7 +218,6 @@ function Home() {
                           response.data[0][0]?.message ===
                           "Room created successfully."
                         ) {
-                          sessionStorage.setItem("username", userName);
                           let path = `/room/${roomName}`;
                           navigate(path);
                         } else {

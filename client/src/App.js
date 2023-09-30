@@ -11,9 +11,11 @@ function App() {
   const navigate = useNavigate();
   const api = useApi();
   const [username, setUsername] = useState("");
+
   useEffect(() => {
     const token = localStorage.getItem("token");
-    setUsername();
+    setUsername("");
+
     if (token) {
       (async () => {
         try {
@@ -21,17 +23,21 @@ function App() {
           setUsername(sessionData.username);
           const userLoggedIn = await isUserLoggedIn();
           if (!userLoggedIn) {
-            navigate("login");
+            // Redirect to "/login" if the user is not logged in.
+            navigate("/login");
           }
         } catch (e) {
           navigate("/login");
         }
       })();
     } else {
+      // Redirect to "/login" if there is no token.
       navigate("/login");
     }
+
     setLoading(false);
-  }, []);
+  }, [navigate, isUserLoggedIn]); // Include "navigate" in the dependency array.
+
   async function isUserLoggedIn() {
     try {
       let response = await api.post(
@@ -43,6 +49,13 @@ function App() {
       throw err;
     }
   }
+
+  // Function to handle logout and redirect to "/login".
+  const handleLogout = () => {
+    localStorage.removeItem("token"); // Remove the token from local storage.
+    navigate("/login"); // Redirect to "/login" after logout.
+  };
+
   return loading ? (
     <Backdrop
       sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
@@ -61,11 +74,8 @@ function App() {
           <Button
             variant="contained"
             color="error"
-            onClick={() => {
-              navigate("/login");
-            }}
+            onClick={handleLogout} // Use the handleLogout function to handle logout.
           >
-            {" "}
             Logout
           </Button>
         </div>

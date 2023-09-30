@@ -6,11 +6,14 @@ import { AgoraVideoPlayer } from "agora-rtc-react";
 import MarkAttendance from "../components/MarkAttendance.js";
 import { useCallback } from "react";
 import useApi from "../helpers/useApi.js";
+import { parseJwt } from "../helpers/utils.js";
 export default function JoinRoom() {
   let navigate = useNavigate();
+  const api = useApi();
   var uid;
-  var displayName = sessionStorage.getItem("username");
-  if (!displayName) {
+  const token = localStorage.getItem("token");
+  const sessionData = JSON.parse(parseJwt(token));
+  if (!sessionData.email) {
     navigate("/");
   }
   var { roomName } = useParams();
@@ -27,9 +30,9 @@ export default function JoinRoom() {
     }
   }
   async function takeAttendance() {
-    let response = await useApi.post(
+    let response = await api.post(
       process.env.BACKEND_URL + "/startAttendance",
-      { owner_name: displayName, room_name: roomName }
+      { owner_name: sessionData.email, room_name: roomName }
     );
     rtmChannel.sendMessage({
       text: JSON.stringify({
@@ -43,7 +46,7 @@ export default function JoinRoom() {
     setAttendanceLoading(true);
     setShowAttendanceResult(true);
     let timer = setInterval(async () => {
-      let response = await useApi.get(
+      let response = await api.get(
         process.env.BACKEND_URL + "/attendanceLogs",
         {
           attendance_id: id,
@@ -174,30 +177,33 @@ export default function JoinRoom() {
     }
     setVideoWidth(getWidth(users.length) + "%");
   }, [users, tracks]);
-  useEffect(async () => {
-    let response = await api.post(process.env.BACKEND_URL + "/joinRoom", {
-      room_name: roomName,
-    });
-    if (response?.data[0][0]) {
-      if (
-        response?.data[0][0].message ===
-        "Room does not exist or is not currently available."
-      ) {
-        navigate("/");
-      } else if (response?.data[0][0].owner_name === displayName) {
-        setIsAdmin(true);
+
+  useEffect(() => {
+    (async () => {
+      let response = await api.post(process.env.BACKEND_URL + "/joinRoom", {
+        room_name: roomName,
+      });
+      if (response?.data[0][0]) {
+        if (
+          response?.data[0][0].message ===
+          "Room does not exist or is not currently available."
+        ) {
+          navigate("/");
+        } else if (response?.data[0][0].owner_name === sessionData.email) {
+          setIsAdmin(true);
+        } else {
+          setIsAdmin(false);
+        }
       } else {
-        setIsAdmin(false);
+        navigate("/");
       }
-    } else {
-      navigate("/");
-    }
+    })();
   }, []);
   return (
-    <div className="bg-gray-700">
+    <div className="bg-gray-700 h-full">
       {" "}
       {start && (
-        <div className="  h-[100vh] p-4 flex flex-col">
+        <div className="  h-full p-4 flex flex-col">
           <div className="flex justify-between grow">
             <div className="flex flex-col grow">
               <div className="grow flex w-full flex-wrap justify-center items-center">
@@ -299,7 +305,7 @@ export default function JoinRoom() {
             <Modal open={showAttendancePopup} className="bg-white">
               <MarkAttendance
                 roomName={roomName}
-                username={displayName}
+                username={sessionData.email}
                 attendanceId={attendanceId}
                 closeModal={closeAttendanceModal}
               />
