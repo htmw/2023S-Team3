@@ -5,7 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { AgoraVideoPlayer } from "agora-rtc-react";
 import MarkAttendance from "../components/MarkAttendance.js";
 import { useCallback } from "react";
-import { ScreenShare } from "./screenShare.js";
+import { ScreenShare } from "./ScreenShare.js";
 import useApi from "../helpers/useApi.js";
 import { parseJwt } from "../helpers/utils.js";
 export default function JoinRoom() {
