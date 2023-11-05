@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { AgoraVideoPlayer } from "agora-rtc-react";
 import MarkAttendance from "../components/MarkAttendance.js";
 import { useCallback } from "react";
+import { ScreenShare } from "./screenShare.js";
 import useApi from "../helpers/useApi.js";
 import { parseJwt } from "../helpers/utils.js";
 export default function JoinRoom() {
@@ -22,6 +23,32 @@ export default function JoinRoom() {
     if (!uid) {
       uid = String(Math.floor(Math.random() * 10000));
       sessionStorage.setItem("uid", uid);
+    }
+  }
+  async function toggleScreenShare() {
+    if (screenShared) {
+      setScreenShared(false);
+      client.unpublish();
+      await tracks[0].setEnabled(true);
+      await tracks[1].setEnabled(true);
+      setTrackState({ video: true, audio: true });
+      if (tracks) await client.publish([tracks[0], tracks[1]]);
+
+      rtmChannel.sendMessage({
+        text: JSON.stringify({
+          type: "stop_screen_share",
+          screenSharingUser: uid,
+        }),
+      });
+    } else {
+      setScreenShared(true);
+      client.unpublish();
+      rtmChannel.sendMessage({
+        text: JSON.stringify({
+          type: "screen_share",
+          screenSharingUser: uid,
+        }),
+      });
     }
   }
   function setRoomName() {
@@ -77,6 +104,8 @@ export default function JoinRoom() {
   const [showAttendanceResult, setShowAttendanceResult] = useState(false);
   const [attendanceResults, setAttendanceResults] = useState([]);
   const [attendanceLoading, setAttendanceLoading] = useState(false);
+  const [screenSharingId, setScreenSharingId] = useState(null);
+  const [screenShared, setScreenShared] = useState(false);
 
   const mute = async (type) => {
     if (type === "audio") {
@@ -147,6 +176,10 @@ export default function JoinRoom() {
           if (data.type === "mark_attendance") {
             setAttendanceId(data.attendance_id);
             setShowAttendancePopup(true);
+          } else if (data.type === "screen_share") {
+            setScreenSharingId(data.screenSharingUser);
+          } else if (data.type === "stop_screen_share") {
+            setScreenSharingId(null);
           }
         });
         setRtmChannel(rtmChannelTemp);
@@ -209,7 +242,10 @@ export default function JoinRoom() {
               <div className="grow flex w-full flex-wrap justify-center items-center">
                 {users.length > 0 ? (
                   users.map((user) => {
-                    if (user.videoTrack) {
+                    if (
+                      user.videoTrack &&
+                      (screenSharingId === null || screenSharingId === user.uid)
+                    ) {
                       return (
                         <div
                           className=" aspect-video"
@@ -268,6 +304,7 @@ export default function JoinRoom() {
                   <span className="material-symbols-outlined">logout</span>
                 </Button>
                 {isAdmin && (
+                  <>
                   <Button
                     variant="contained"
                     disabled={attendanceLoading}
@@ -276,6 +313,21 @@ export default function JoinRoom() {
                   >
                     <span className="material-symbols-outlined">group</span>
                   </Button>
+                  <Button
+                    variant="contained"
+                    title={
+                      screenShared
+                        ? "Stop Screen Sharing"
+                        : "Share Your Screen"
+                    }
+                    onClick={() => toggleScreenShare()}
+                  >
+                    <span className="material-symbols-outlined">
+                      {screenShared ? "stop_screen_share" : "screen_share"}
+                    </span>
+                  </Button>
+                </>
+                  
                 )}
               </div>
             </div>
@@ -296,11 +348,15 @@ export default function JoinRoom() {
                     </span>
                   )}
                 </div>
+                 )}{" "}
+                 {!screenShared ? (
+                   <AgoraVideoPlayer
+                     className=" w-36 h-36 rounded-2xl agora-player"
+                     videoTrack={tracks[1]}
+                   />
+                 ) : (
+                   <ScreenShare client={client}></ScreenShare>
               )}
-              <AgoraVideoPlayer
-                className=" w-36 h-36 rounded-2xl agora-player"
-                videoTrack={tracks[1]}
-              />
             </div>
             <Modal open={showAttendancePopup} className="bg-white">
               <MarkAttendance

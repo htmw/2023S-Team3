@@ -1,4 +1,4 @@
-import { createClient, createMicrophoneAndCameraTracks } from "agora-rtc-react";
+import { createClient, createMicrophoneAndCameraTracks, createScreenVideoTrack } from "agora-rtc-react";
 import AgoraRTM from "agora-rtm-sdk";
 
 const appConfig = {
@@ -9,5 +9,6 @@ const appConfig = {
 };
 const getClient = createClient(appConfig);
 const getUserTracks = createMicrophoneAndCameraTracks();
+const getUserScreenVideoTracks = createScreenVideoTrack();
 const rtmClient = AgoraRTM.createInstance(appConfig.appId);
-export { getClient, getUserTracks, rtmClient };
+export { getClient, getUserTracks, getUserScreenVideoTracks, rtmClient };
