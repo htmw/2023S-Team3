@@ -28,6 +28,7 @@ def verify_face():
 if __name__ == '__main__':
     # set the port number here
     buildModel()
-    port = 5001
+    port = 5000
     CORS(app)
-    app.run(port=port,host='0.0.0.0')
+    context = ('/etc/letsencrypt/live/simplyonline.tech/fullchain.pem', '/etc/letsencrypt/live/simplyonline.tech/privkey.pem')
+    app.run(port=port,host='0.0.0.0', ssl_context=context)

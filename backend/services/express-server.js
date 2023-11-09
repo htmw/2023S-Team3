@@ -1,5 +1,7 @@
 const express = require("express");
-const {setRoutes} = require("./router");
+const https = require("https");
+const fs = require("fs");
+const { setRoutes } = require("./router");
 var cors = require("cors");
 module.exports = class Server {
   constructor(port, originAddress) {
@@ -21,8 +23,22 @@ module.exports = class Server {
     setRoutes(this.app);
   }
   start() {
-    this.app.listen(this.port, () => {
+    if (process.env.SERVER === "prod") {
+      var options = {
+        key: fs.readFileSync(
+          "/etc/letsencrypt/live/simplyonline.tech/privkey.pem"
+        ),
+        cert: fs.readFileSync(
+          "/etc/letsencrypt/live/simplyonline.tech/fullchain.pem"
+        ),
+      };
+      https.createServer(options, this.app).listen(this.port, () => {
         console.log("Server running at port: " + this.port);
-    });
+      });
+    } else {
+      this.app.listen(this.port, () => {
+        console.log("Server running at port: " + this.port);
+      });
+    }
   }
 };

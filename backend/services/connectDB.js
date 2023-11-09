@@ -7,6 +7,7 @@ module.exports = class ConnectDB {
       user: process.env.MY_SQL_USER,
       password: process.env.PASSWORD,
       database: process.env.DB,
+      connectTimeout: 30000,
     });
   }
   async testConnection() {

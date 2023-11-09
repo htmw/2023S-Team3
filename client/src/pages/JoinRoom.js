@@ -124,8 +124,6 @@ export default function JoinRoom() {
   const leaveChannel = async () => {
     await client.leave();
     client.removeAllListeners();
-    tracks[0].close();
-    tracks[1].close();
     setStart(false);
     navigate("/");
   };
@@ -232,6 +230,19 @@ export default function JoinRoom() {
       }
     })();
   }, []);
+  useEffect(
+    () => () => {
+      (async () => {
+        if (screenShared) {
+          toggleScreenShare();
+        }
+        client.removeAllListeners();
+        await client.leave();
+        location.reload();
+      })();
+    },
+    []
+  );
   return (
     <div className="bg-gray-700 h-full">
       {" "}
@@ -305,29 +316,28 @@ export default function JoinRoom() {
                 </Button>
                 {isAdmin && (
                   <>
-                  <Button
-                    variant="contained"
-                    disabled={attendanceLoading}
-                    title="Mark Attendance"
-                    onClick={() => takeAttendance()}
-                  >
-                    <span className="material-symbols-outlined">group</span>
-                  </Button>
-                  <Button
-                    variant="contained"
-                    title={
-                      screenShared
-                        ? "Stop Screen Sharing"
-                        : "Share Your Screen"
-                    }
-                    onClick={() => toggleScreenShare()}
-                  >
-                    <span className="material-symbols-outlined">
-                      {screenShared ? "stop_screen_share" : "screen_share"}
-                    </span>
-                  </Button>
-                </>
-                  
+                    <Button
+                      variant="contained"
+                      disabled={attendanceLoading}
+                      title="Mark Attendance"
+                      onClick={() => takeAttendance()}
+                    >
+                      <span className="material-symbols-outlined">group</span>
+                    </Button>
+                    <Button
+                      variant="contained"
+                      title={
+                        screenShared
+                          ? "Stop Screen Sharing"
+                          : "Share Your Screen"
+                      }
+                      onClick={() => toggleScreenShare()}
+                    >
+                      <span className="material-symbols-outlined">
+                        {screenShared ? "stop_screen_share" : "screen_share"}
+                      </span>
+                    </Button>
+                  </>
                 )}
               </div>
             </div>
@@ -348,14 +358,14 @@ export default function JoinRoom() {
                     </span>
                   )}
                 </div>
-                 )}{" "}
-                 {!screenShared ? (
-                   <AgoraVideoPlayer
-                     className=" w-36 h-36 rounded-2xl agora-player"
-                     videoTrack={tracks[1]}
-                   />
-                 ) : (
-                   <ScreenShare client={client}></ScreenShare>
+              )}{" "}
+              {!screenShared ? (
+                <AgoraVideoPlayer
+                  className=" w-36 h-36 rounded-2xl agora-player"
+                  videoTrack={tracks[1]}
+                />
+              ) : (
+                <ScreenShare client={client}></ScreenShare>
               )}
             </div>
             <Modal open={showAttendancePopup} className="bg-white">
