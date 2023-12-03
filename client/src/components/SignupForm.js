@@ -16,10 +16,11 @@ import {
   validateEmail,
   validatePassword,
   validateUsername,
+  validateFace
 } from "../helpers/validations";
 import { useState } from "react";
 import useApi from "../helpers/useApi";
-import { Throttle } from "../helpers/utils";
+import PhotoModal from "./photoModal";
 function SignupForm(props) {
   const { showLoginPage } = props;
   const validations = {
@@ -27,6 +28,7 @@ function SignupForm(props) {
     username: validateUsername,
     password: validatePassword,
     confirmPassword: validatePassword,
+    face: validateFace,
   };
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -43,6 +45,7 @@ function SignupForm(props) {
       username: "",
       password: "",
       confirmPassword: "",
+      face: "",
     };
   }
   const clearFields = () => {
@@ -50,6 +53,7 @@ function SignupForm(props) {
   };
 
   const handleInputChange = (event) => {
+    debugger
     const { name, value } = event.target;
     setSignupForm((prevForm) => ({
       ...prevForm,
@@ -245,6 +249,18 @@ function SignupForm(props) {
             />
             <FormHelperText>
               {validationMessages.confirmPassword}
+            </FormHelperText>
+          </FormControl>
+          <FormControl required error={!!validationMessages.confirmPassword}>
+            <PhotoModal
+              id="face"
+              name="face"
+              value={signupForm.face}
+              error={!!validationMessages.confirmPassword}
+              onChange={handleInputChange}
+            ></PhotoModal>
+            <FormHelperText>
+              {validationMessages.face}
             </FormHelperText>
           </FormControl>
           <Button variant="contained" onClick={submitLoginForm}>

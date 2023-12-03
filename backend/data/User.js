@@ -1,10 +1,10 @@
 module.exports = {
-  createUser: async function (email, username, password, confirmPassword) {
+  createUser: async function (email, username, password, confirmPassword, face) {
     let data = [];
     data = await new Promise((resolve, reject) => {
       connection.query(
-        "call simply_online.create_user(?,?,?,?)",
-        [email, username, password, confirmPassword],
+        "call simply_online.create_user(?,?,?,?,?)",
+        [email, username, password, confirmPassword, face],
         function (err, result) {
           if (err) {
             reject(err);

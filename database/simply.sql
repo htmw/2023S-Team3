@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.32, for Linux (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.34, for Win64 (x86_64)
 --
 -- Host: localhost    Database: simply_online
 -- ------------------------------------------------------
--- Server version	8.0.34-0ubuntu0.23.04.1
+-- Server version	8.0.35
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -19,8 +19,9 @@
 -- Table structure for table `attendance_logs`
 --
 
-
 create database simply_online;
+
+use simply_online;
 
 DROP TABLE IF EXISTS `attendance_logs`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -84,7 +85,7 @@ CREATE TABLE `passwords` (
   PRIMARY KEY (`password_id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `passwords_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -93,6 +94,7 @@ CREATE TABLE `passwords` (
 
 LOCK TABLES `passwords` WRITE;
 /*!40000 ALTER TABLE `passwords` DISABLE KEYS */;
+
 /*!40000 ALTER TABLE `passwords` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -118,7 +120,7 @@ CREATE TABLE `rooms` (
   `room_type` varchar(50) DEFAULT '',
   `is_valid` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`room_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -144,8 +146,9 @@ CREATE TABLE `user` (
   `salt` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `modified_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `image_data` blob,
   PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -154,6 +157,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
+
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -300,7 +304,8 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `create_user`(
     IN p_email VARCHAR(255),
     IN p_username VARCHAR(50),
     IN p_password VARCHAR(64),
-    IN p_password_rewrite VARCHAR(64)
+    IN p_password_rewrite VARCHAR(64),
+    IN p_image_data BLOB
 )
 BEGIN
     DECLARE v_salt VARCHAR(50);
@@ -353,8 +358,8 @@ BEGIN
     -- Generate a unique salt
     SET v_salt = UUID();
     -- Insert user into the user table
-    INSERT INTO `user` (`email`, `username`, `salt`)
-    VALUES (p_email, p_username, v_salt);
+    INSERT INTO `user` (`email`, `username`, `salt`, `image_data`)
+    VALUES (p_email, p_username, v_salt, p_image_data);
     -- Get the generated user_id
     SET @user_id = LAST_INSERT_ID();
     -- Hash and insert password into passwords table
@@ -541,4 +546,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-09-19  9:41:01
+-- Dump completed on 2023-12-02 17:53:00

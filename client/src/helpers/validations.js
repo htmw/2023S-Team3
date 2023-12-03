@@ -43,3 +43,6 @@ export function validateUsername(username) {
     ? "Username cannot have more than one consecutive space."
     : "";
 }
+export function validateFace(face) {
+  return !face ? "Face ID is required" : "";
+}

@@ -7,7 +7,8 @@ module.exports = {
         req.body?.email,
         req.body?.username,
         req.body?.password,
-        req.body?.confirmPassword
+        req.body?.confirmPassword,
+        req.body?.face
       );
       res.send(result);
     } catch (err) {
