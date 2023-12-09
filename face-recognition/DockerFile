@@ -9,10 +9,21 @@ RUN pip install -r requirements.txt
 
 COPY . /app
 
+# EXPOSE 5000
+# CMD ["python", "home.py"]
+
+# Install Gunicorn
+RUN pip install gunicorn
+
+COPY . /app
+
 EXPOSE 5000
-CMD ["python", "home.py"]
+CMD ["gunicorn", "--config", "gunicorn_config.py", "home:app"]
 
 
 # sudo docker buildx build  --platform linux/amd64 -t simplyonline:face .
 
 # docker run -p 5000:5000 -d simplyonline:face
+
+
+

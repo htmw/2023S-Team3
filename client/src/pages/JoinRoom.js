@@ -371,7 +371,7 @@ export default function JoinRoom() {
             <Modal open={showAttendancePopup} className="bg-white">
               <MarkAttendance
                 roomName={roomName}
-                username={sessionData.email}
+                username={sessionData.username}
                 attendanceId={attendanceId}
                 closeModal={closeAttendanceModal}
               />

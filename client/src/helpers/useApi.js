@@ -11,7 +11,7 @@ const client = axios.create(config);
 
 function useApi() {
   const navigate = useNavigate();
-  const get = async (url, { params }) => {
+  const get = async (url, params ) => {
     config.headers.token = localStorage.getItem("token");
     try {
       return await client.get(url, {

@@ -11,14 +11,15 @@ import pymysql.cursors
 import json
 import os
 
-host = 'localhost'
+host = 'host.docker.internal'
 port = 3306
-user = 'root'
-password = 'Meemaw#11'
+user = 'user'
+password = 'password'
 database = 'simply_online'
 
 def buildModel():
     print("---------------------------building model---------------------------")
+    print(host,port,user,password,database)
     connection = pymysql.connect(host=host, user=user, password=password, database=database, connect_timeout=100000)
     with connection:
         with connection.cursor() as cursor:
@@ -43,6 +44,8 @@ def buildModel():
     print("---------------------------Model building has completed---------------------------")
 
 app = Flask(__name__)
+CORS(app)
+buildModel()
 @app.route('/verify', methods=['POST'])
 def verify_face():
     payloadJson = request.get_json()
@@ -56,11 +59,12 @@ def verify_face():
     for item in test:
         result.append(item.to_json())
     return result
-if __name__ == '__main__':
-    # set the port number here
-    buildModel()
-    port = 5000
-    CORS(app)
-    # context = ('/etc/letsencrypt/live/simplyonline.tech/fullchain.pem', '/etc/letsencrypt/live/simplyonline.tech/privkey.pem')
-    # app.run(port=port,host='0.0.0.0', ssl_context=context)
-    app.run(port=port)
+# if __name__ == '__main__':
+#     # set the port number here
+#     buildModel()
+#     port = 5000
+#     CORS(app)
+#     print("yo")
+#     # context = ('/etc/letsencrypt/live/simplyonline.tech/fullchain.pem', '/etc/letsencrypt/live/simplyonline.tech/privkey.pem')
+#     # app.run(port=port,host='0.0.0.0', ssl_context=context)
+#     app.run(port=port)
