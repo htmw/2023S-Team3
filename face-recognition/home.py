@@ -13,8 +13,8 @@ import os
 
 host = 'host.docker.internal'
 port = 3306
-user = 'user'
-password = 'password'
+user = ''
+password = ''
 database = 'simply_online'
 
 def buildModel():
